@@ -1,7 +1,6 @@
 """This module provides the ORM logic for the User database model"""
 
 import uuid
-import sqlalchemy as sql
 
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
@@ -34,6 +33,11 @@ class User(ModelBase):
     created_at  = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at  = Column(DateTime, default=datetime.utcnow, 
         onupdate=datetime.utcnow, nullable=False
+    )
+    calculations = relationship(
+        "Calculation",
+        back_populates="user",
+        cascade="all, delete, delete-orphan"
     )
     
     def __repr__(self):
