@@ -35,7 +35,7 @@ def test_user_create_operation(db_session):
 
     record_1 = db_session.query(User).filter_by(email=user_1.email).first()
     assert record_1 is not None, \
-            "test_user_create_operation Step 1 Failure: user_1 not inserted" 
+        "test_user_create_operation Step 1 Failure: user_1 not inserted" 
     assert record_1.first_name == user_1_data['first_name'] and \
         record_1.last_name == user_1_data['last_name'] and \
         record_1.email == user_1_data['email'] and \

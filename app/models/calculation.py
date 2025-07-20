@@ -2,16 +2,16 @@
 
 import uuid
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from datetime import datetime as dt
 from functools import reduce
-from sqlalchemy import Collumn, DateTime, ForeignKey, JSON, String
+from sqlalchemy import Column, DateTime, ForeignKey, JSON, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
 
 from app import ModelBase
 
-class Calculation(Base, ABC):
+class Calculation(ModelBase):
     """Abstract Base Class for the Calculation family data model"""
     __tablename__ = 'calculations'
     _types : dict[str, type] = {}
@@ -41,7 +41,7 @@ class Calculation(Base, ABC):
         ----------
         calc_type: str
             a string tag identifying the Calculation subclass to create
-        user.id: uuid.UUID
+        user_id: uuid.UUID
             the user.id of the calling User
         inputs: list[float]
             a list of operands to the calculation called
@@ -51,11 +51,11 @@ class Calculation(Base, ABC):
         ValueError
             If the provided type string does not match a registered calculation type
         """
-        calc_class = cls._types.get(calculation_type.lower())
+        calc_class = cls._types.get(calc_type.lower())
         if not calc_class:
-            raise ValueError(f"Unsupported calculation type: {calculation_type}")
-        if not inputs or len(self.inputs) < 2:
-            raise ValueError(f"{calculation_type} requires at least 2 operands")
+            raise ValueError(f"Unsupported calculation type: {calc_type}")
+        if not inputs or len(inputs) < 2:
+            raise ValueError(f"{calc_type} requires at least 2 operands")
         return calc_class(user_id=user_id, inputs=inputs)
 
     @classmethod
@@ -88,7 +88,7 @@ class Calculation(Base, ABC):
         float
             the result of the Calculation
         """
-        raise NotImplementedError
+        raise NotImplementedError # pragma: no cover
 
     def __repr__(self) -> str:
         """
@@ -122,7 +122,7 @@ class Subtraction(Calculation):
 @Calculation.register
 class Multiplication(Calculation):
     """Data model for Multiplication Calculations"""
-    __mapper_args__ = {"polymorphic_identity": "subtraction"}
+    __mapper_args__ = {"polymorphic_identity": "multiplication"}
     
     def get_result(self) -> float:
         return reduce(lambda x, y: x * y, self.inputs)
@@ -130,20 +130,20 @@ class Multiplication(Calculation):
 @Calculation.register
 class Division(Calculation):
     """Data model for Division Calculations"""
-    __mapper_args__ = {"polymorphic_identity": "subtraction"}
+    __mapper_args__ = {"polymorphic_identity": "division"}
     
     def get_result(self) -> float:
-        if 0 in inputs[1:]:
+        if 0 in self.inputs[1:]:
             raise ValueError("Zero divisor input invalid for Division")
         return reduce(lambda x, y: x / y, self.inputs)
 
 @Calculation.register
 class Modulus(Calculation):
     """Data model for Modulo Division Calculations"""
-    __mapper_args__ = {"polymorphic_identity": "subtraction"}
+    __mapper_args__ = {"polymorphic_identity": "modulus"}
     
     def get_result(self) -> float:
-        if 0 in inputs[1:]:
+        if 0 in self.inputs[1:]:
             raise ValueError("Zero divisor input invalid for Modulo Division")
-        return reduce(lambda x, y: x & y, self.inputs)
+        return reduce(lambda x, y: x % y, self.inputs)
 

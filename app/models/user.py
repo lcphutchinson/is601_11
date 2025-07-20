@@ -9,7 +9,8 @@ from pydantic import ValidationError
 from sqlalchemy import Boolean, Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import IntegrityError
-from typing import Optional, Dict, Any
+from sqlalchemy.orm import Mapped, relationship
+from typing import Any, Dict, Optional
 
 from app import ModelBase
 from app.database_client import DatabaseClient
