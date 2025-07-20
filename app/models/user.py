@@ -1,7 +1,6 @@
 """This module provides the ORM logic for the User database model"""
 
 import uuid
-import sqlalchemy as sql
 
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
@@ -10,7 +9,8 @@ from pydantic import ValidationError
 from sqlalchemy import Boolean, Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import IntegrityError
-from typing import Optional, Dict, Any
+from sqlalchemy.orm import Mapped, relationship
+from typing import Any, Dict, Optional
 
 from app import ModelBase
 from app.database_client import DatabaseClient
@@ -34,6 +34,11 @@ class User(ModelBase):
     created_at  = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at  = Column(DateTime, default=datetime.utcnow, 
         onupdate=datetime.utcnow, nullable=False
+    )
+    calculations = relationship(
+        "Calculation",
+        back_populates="user",
+        cascade="all, delete, delete-orphan"
     )
     
     def __repr__(self):
