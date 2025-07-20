@@ -76,28 +76,28 @@ jobs:
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
 
-#  deploy:
-#    needs: security
-#    if: github.ref == 'refs/heads/main'
-#    runs-on: ubuntu-latest
-#    environment: production
-#    steps:
-#      - uses: actions/checkout@v4
+  deploy:
+    needs: security
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
 
-#      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3
 
-#      - uses: docker/login-action@v3
-#        with:
-#          username: ${{ secrets.DOCKERHUB_USERNAME }}
-#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-#      - uses: docker/build-push-action@v5
-#        with:
-#          push: true
-#          tags: |
-#            lcphutchinson/is601_11:latest
-#            lcphutchinson/is601_11:${{ github.sha }}
-#          platforms: linux/amd64,linux/arm64
-#          cache-from: type=registry,ref=lcphutchinson/is601_11:cache
-#          cache-to: type=inline,mode=max
+      - uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            lcphutchinson/is601_11:latest
+            lcphutchinson/is601_11:${{ github.sha }}
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=registry,ref=lcphutchinson/is601_11:cache
+          cache-to: type=inline,mode=max
 
